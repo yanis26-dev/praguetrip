@@ -173,11 +173,16 @@
     .day-nav {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px;
       padding: 6px;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: none;
+      scroll-snap-type: inline proximity;
       border: 1px solid rgba(23,48,45,.1);
       border-radius: 20px;
       background: rgba(255,253,248,.88);
       box-shadow: 0 8px 30px rgba(25,52,48,.06);
     }
+    .day-nav::-webkit-scrollbar { display: none; }
     .day-tab {
       min-height: 54px;
       display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -186,6 +191,7 @@
       color: var(--muted);
       background: transparent;
       cursor: pointer;
+      scroll-snap-align: center;
       transition: color .2s ease, background .2s ease, transform .2s ease, box-shadow .2s ease;
     }
     .day-tab:hover { color: var(--ink); background: var(--surface-2); }
@@ -360,8 +366,8 @@
       .flight__route b { font-size: 18px; }
       .flight-divider { width: 26px; }
       .day-nav-wrap { top: 61px; margin-top: 11px; }
-      .day-nav { gap: 4px; padding: 5px; border-radius: 17px; }
-      .day-tab { min-height: 49px; padding: 6px 3px; gap: 5px; border-radius: 12px; }
+      .day-nav { grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 5px; border-radius: 17px; }
+      .day-tab { min-height: 49px; padding: 6px 5px; gap: 5px; border-radius: 12px; }
       .day-tab__date { font-size: 16px; }
       .day-tab__copy strong { font-size: 10px; }
       .day-tab__copy small { font-size: 9px; }
@@ -426,6 +432,7 @@
             <i aria-hidden="true" data-icon="map-pin"></i><span>Hotel Pulse8 · Karlín</span>
           </a>
           <span class="meta-chip"><i aria-hidden="true" data-icon="users"></i><span>פראג | גברים ונהנים</span></span>
+          <span class="meta-chip"><span aria-hidden="true">🛍️</span><span>קניות בשישי ובשבת</span></span>
         </div>
       </div>
     </section>
@@ -529,8 +536,12 @@
           {
             time: "אחר הצהריים", category: "שופינג", type: "shopping",
             options: [
-              { title: "שופינג בקניון Palladium ומדרחוב Na Příkopě", desc: "מרכז קניות ענק בכיכר הרפובליקה ורחוב השופינג הראשי כולל כל הרשתות הבינלאומיות.", map: "Palladium Prague" },
-              { title: "שופינג בקניון Westfield Chodov", desc: "הקניון הגדול ביותר בצ'כיה (נגיש ישירות במטרו C), כולל סניף ענק של Primark ומאות חנויות.", map: "Westfield Chodov Prague" }
+              { title: "שופינג בקניון Palladium ומדרחוב Na Příkopě", desc: "מרכז קניות ענק בכיכר הרפובליקה ורחוב השופינג הראשי כולל כל הרשתות הבינלאומיות. זו הבחירה הכי מרכזית וקלה לשילוב עם העיר העתיקה וארוחת הערב.", map: "Palladium Prague", url: "https://www.palladiumpraha.cz/en/" },
+              { title: "Westfield Chodov — המבחר הגדול ביותר", desc: "כ־250 חנויות בשלוש קומות, כולל Zara, H&M, Mango, Marks & Spencer, Nike, אלקטרוניקה, ספורט ואוכל. הגעה ישירה לתחנת Chodov בקו המטרו C.", map: "Westfield Chodov Prague", url: "https://www.westfield.com/cz/czech-republic/chodov" },
+              { title: "Nový Smíchov — Anděl", desc: "יותר מ־160 חנויות ומסעדות, סופרמרקט גדול, מתחם אוכל וקולנוע. נמצא ממש ליד תחנת Anděl בקו B ומתאים להמשך ערב באזור.", map: "Nový Smíchov Prague", url: "https://aplikace.novysmichov.eu/" },
+              { title: "OC Letňany — קניון ענק ופחות תיירותי", desc: "אחד ממרכזי הקניות הגדולים בפראג, עם מבחר רחב, Tesco גדול, מסעדות וקולנוע בן 12 אולמות. מגיעים לתחנת Letňany בקו C ומשם באוטובוס קצר.", map: "OC Letňany Prague", url: "https://www.oc-letnany.cz/" },
+              { title: "Arkády Pankrác — קומפקטי ונוח", desc: "כ־140 חנויות, מסעדות ובתי קפה עם כניסה ישירה מתחנת Pankrác בקו C. מתאים לסיבוב ממוקד ופחות מתיש מקניון ענק.", map: "Arkády Pankrác Prague", url: "https://www.ocarkady.cz/en/pankrac-arcade" },
+              { title: "Fashion Arena Prague Outlet — יום אאוטלט", desc: "יותר מ־200 מותגי אופנה ולייף־סטייל ומחירי אאוטלט בהנחות טיפוסיות של 30%–70%. פתוח בדרך כלל 10:00–20:00 ויש שאטל חינמי.", map: "Fashion Arena Prague Outlet", url: "https://www.fashion-arena.cz/en/practical-information" }
             ]
           },
           {
@@ -550,21 +561,31 @@
         ]
       },
       {
-        id: "day-3", date: "2026-12-19", number: "19", weekday: "שבת", label: "יום 3", title: "טיול יום, הרובע היהודי והשוק האותנטי",
+        id: "day-3", date: "2026-12-19", number: "19", weekday: "שבת", label: "יום 3", title: "טיול יום, קניות, הרובע היהודי והשוק האותנטי",
         slots: [
           {
             time: "בוקר & צהריים", category: "טיול יום / שופינג / אטרקציה", type: "attraction",
             options: [
               { title: "טיול קצר לקוטנה הורה (Kutná Hora - כנסיית העצמות)", desc: "נסיעה של 50 דקות ברכבת. ביקור ב'קפלת העצמות' המפורסמת בעולם וחזרה לפראג בצהריים — חוויה שכולם ימשיכו לדבר עליה.", map: "Sedlec Ossuary Kutná Hora" },
-              { title: "יום אאוטלט ב-Fashion Arena Prague Outlet", desc: "מתחם אאוטלט ענק של מותגים בינלאומיים (Nike, Adidas, Hilfiger, Levi's) בהנחות גדולות.", map: "Fashion Arena Prague Outlet" },
-              { title: "נסיעה לדרזדן (גרמניה)", desc: "שעתיים ברכבת/אוטובוס ישיר: שוק חג המולד העתיק באירופה (Striezelmarkt) ושופינג גרמני.", map: "Striezelmarkt Dresden" }
+              { title: "יום אאוטלט ב-Fashion Arena Prague Outlet", desc: "יותר מ־200 מותגים בינלאומיים, בהם Nike, Adidas, Levi’s ו־Diesel, במחירי אאוטלט ובהנחות טיפוסיות של 30%–70%. הקדישו לפחות ארבע עד חמש שעות.", map: "Fashion Arena Prague Outlet", url: "https://www.fashion-arena.cz/en/practical-information" },
+              { title: "נסיעה לדרזדן (גרמניה)", desc: "שעתיים ברכבת/אוטובוס ישיר: שוק חג המולד העתיק באירופה (Striezelmarkt) ושופינג גרמני.", map: "Striezelmarkt Dresden" },
+              { title: "Westfield Chodov — יום קניות מלא", desc: "כ־250 חנויות ורשתות בינלאומיות במתחם גדול ונוח, עם גישה ישירה במטרו C. הבחירה החזקה ביותר למבחר רחב של אופנה, ספורט, נעליים ואלקטרוניקה.", map: "Westfield Chodov Prague", url: "https://www.westfield.com/cz/czech-republic/chodov" },
+              { title: "OC Letňany — קניות, Tesco וקולנוע", desc: "מתחם גדול עם חנויות אופנה, ספורט ואלקטרוניקה, Tesco גדול, אוכל וקולנוע בן 12 אולמות. בחירה טובה למי שמעדיף פחות עומס תיירותי.", map: "OC Letňany Prague", url: "https://www.oc-letnany.cz/" },
+              { title: "Nový Smíchov — קניות ב־Anděl", desc: "יותר מ־160 חנויות ומסעדות, סופרמרקט גדול וקולנוע ממש ליד תחנת Anděl בקו B. נוח לשלב עם ערב אוכל וקוקטיילים באזור.", map: "Nový Smíchov Prague", url: "https://aplikace.novysmichov.eu/" },
+              { title: "Arkády Pankrác — קניות ממוקדות", desc: "כ־140 חנויות עם כניסה ישירה מתחנת Pankrác בקו C. מתאים למסלול קניות רגוע וקצר יותר מ־Chodov או Letňany.", map: "Arkády Pankrác Prague", url: "https://www.ocarkady.cz/en/pankrac-arcade" },
+              { title: "Palladium + Na Příkopě", desc: "קניות במרכז העיר: מתחילים ב־Palladium בכיכר הרפובליקה וממשיכים ברגל לרשתות ברחוב Na Příkopě ולעיר העתיקה.", map: "Palladium Prague", url: "https://www.palladiumpraha.cz/en/" }
             ]
           },
           {
-            time: "אחר הצהריים", category: "תרבות & אוכל", type: "culture",
+            time: "אחר הצהריים", category: "תרבות & אוכל / המשך קניות", type: "culture",
             options: [
               { title: "הרובע היהודי (Josefov) + צהריים ב-Naše Maso", desc: "סיור בבתי הכנסת ובית הקברות העתיק, ועצירה לארוחת בשרים ב-Naše Maso (אטליז הבוטיק המפורסם).", map: "Jewish Quarter Prague" },
-              { title: "שופינג נוסף בעיר העתיקה", desc: "אם כבר עייפים מסיורים — סיבוב שקט בחנויות ובסמטאות סביב העיר העתיקה.", map: "Old Town Prague" }
+              { title: "שופינג נוסף בעיר העתיקה", desc: "אם כבר עייפים מסיורים — סיבוב שקט בחנויות ובסמטאות סביב העיר העתיקה.", map: "Old Town Prague" },
+              { title: "קניון שני: Arkády Pankrác", desc: "סיום יעיל עם כ־140 חנויות וגישה ישירה מתחנת Pankrác בקו C. מתאים במיוחד כהמשך ל־Chodov או Letňany.", map: "Arkády Pankrác Prague", url: "https://www.ocarkady.cz/en/pankrac-arcade" },
+              { title: "קניון שני: Nový Smíchov", desc: "יותר מ־160 חנויות ומסעדות ליד תחנת Anděl בקו B, עם סופרמרקט וקולנוע. מתאים לסיום נוח עם ארוחת ערב באזור.", map: "Nový Smíchov Prague", url: "https://aplikace.novysmichov.eu/" },
+              { title: "קניון שני: Palladium", desc: "מסיימים במיקום הכי מרכזי — Palladium, מדרחוב Na Příkopě והעיר העתיקה. קל להמשיך משם לשוק חג מולד או למסעדה.", map: "Palladium Prague", url: "https://www.palladiumpraha.cz/en/" },
+              { title: "המשך קניות ב־Westfield Chodov", desc: "אם הבוקר הוקדש לאטרקציה או לקניון אחר, ממשיכים אחר הצהריים למתחם הגדול עם כ־250 חנויות וגישה ישירה במטרו C.", map: "Westfield Chodov Prague", url: "https://www.westfield.com/cz/czech-republic/chodov" },
+              { title: "המשך קניות ב־OC Letňany", desc: "עוד כמה שעות במתחם הגדול עם Tesco, אוכל וקולנוע. מתאים למי שבחר בבוקר במסלול אחר ורוצה להפוך את שבת ליום קניות מלא.", map: "OC Letňany Prague", url: "https://www.oc-letnany.cz/" }
             ]
           },
           {
@@ -616,6 +637,7 @@
       "sparkles": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m12 3 1.3 4.2L17 9l-3.7 1.8L12 15l-1.3-4.2L7 9l3.7-1.8L12 3ZM5 14l.8 2.4L8 17.5l-2.2 1.1L5 21l-.8-2.4L2 17.5l2.2-1.1L5 14ZM19 12l.7 2 1.8.9-1.8.9-.7 2-.7-2-1.8-.9 1.8-.9.7-2Z"/></svg>',
       "x": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>',
       "map": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15M15 6v15"/></svg>',
+      "external": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7M10 14 21 3M21 14v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6"/></svg>',
       "shuffle": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
       "check": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>',
       "skip": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6h12M6 18 18 6M18 18H6"/></svg>'
@@ -680,7 +702,7 @@
       container.innerHTML = itineraryData.map((day, dayIndex) => `
         <section class="day-panel ${state.activeDay === day.id ? "is-active" : ""}" id="panel-${day.id}" role="tabpanel" aria-labelledby="tab-${day.id}" ${state.activeDay === day.id ? "" : "hidden"}>
           <header class="day-head">
-            <div><div class="day-kicker"><span></span>${day.label} · ${day.weekday}, ${day.number} בדצמבר</div><h2>${day.title}</h2></div>
+            <div><div class="day-kicker"><span></span>${day.dateLabel || `${day.label} · ${day.weekday}, ${day.number} בדצמבר`}</div><h2>${day.title}</h2></div>
             <div class="day-count">${day.slots.length} תחנות</div>
           </header>
           <div class="timeline">${day.slots.map((slot, slotIndex) => renderSlot(dayIndex, slotIndex, slot)).join("")}</div>
@@ -704,6 +726,7 @@
               <p data-role="desc">${escapeText(option.desc)}</p>
               <div class="activity-actions">
                 <a class="action-link" data-role="map" href="${mapUrl(option.map)}" target="_blank" rel="noopener" aria-label="פתיחת ${escapeText(option.title)} במפות Google">${icon("map")}<span>פתיחה במפות</span></a>
+                ${option.url ? `<a class="action-link site-link" href="${escapeText(option.url)}" target="_blank" rel="noopener" aria-label="פתיחת האתר של ${escapeText(option.title)}">${icon("external")}<span>אתר הקניון</span></a>` : ""}
                 ${slot.options.length > 1 ? `<button class="change-button" type="button" data-change="${dayIndex}:${slotIndex}">${icon("shuffle")}<span>שינוי אפשרות · ${choiceIndex + 1}/${slot.options.length}</span></button>` : ""}
               </div>
             </div>
@@ -720,6 +743,7 @@
       state.activeDay = dayId;
       saveState();
       document.querySelectorAll(".day-tab").forEach(tab => tab.setAttribute("aria-selected", String(tab.dataset.day === dayId)));
+      document.getElementById(`tab-${dayId}`)?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
       document.querySelectorAll(".day-panel").forEach(panel => {
         const active = panel.id === `panel-${dayId}`;
         panel.classList.toggle("is-active", active);
@@ -740,6 +764,7 @@
       document.getElementById("progressFill").style.width = `${percentage}%`;
       const track = document.getElementById("progressTrack");
       track.setAttribute("aria-valuenow", done);
+      track.setAttribute("aria-valuemax", total);
       document.getElementById("progressCaption").textContent = skipped ? `${percentage}% הושלמו · ${skipped} פעילויות דולגו` : done ? `${percentage}% הושלמו — ממשיכים לטייל` : "סמנו פעילות כהושלמה או דלגו עליה.";
     }
 
@@ -798,8 +823,9 @@
       const local = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
       const match = itineraryData.find(day => day.date === local);
       if (match) { selectDay(match.id, true); showToast(`${match.weekday} · זה היום שלכם`); return; }
-      const tripStart = new Date(`${itineraryData[0].date}T00:00:00`);
-      const fallback = today < tripStart ? itineraryData[0] : itineraryData[itineraryData.length - 1];
+      const datedDays = itineraryData.filter(day => day.date);
+      const tripStart = new Date(`${datedDays[0].date}T00:00:00`);
+      const fallback = today < tripStart ? datedDays[0] : datedDays[datedDays.length - 1];
       selectDay(fallback.id, true);
       showToast(today < tripStart ? "הטיול מתחיל ב־17 בדצמבר" : "הטיול הסתיים — איזה כיף שהיה");
     }
